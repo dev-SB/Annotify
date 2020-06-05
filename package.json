@@ -1,6 +1,6 @@
 {
 	"name": "annotify",
-	"displayName": "annotify",
+	"displayName": "Annotify",
 	"description": "",
 	"version": "0.0.1",
 	"engines": {
@@ -10,21 +10,37 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCustomEditor:annotify.annotateDoc"
+		"onCommand:annotify.annotateDoc",
+		"onView:annotify.annotateDocSideBar"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
-		"customEditors": [
+		"commands":[
 			{
-				"viewType": "annotify.annotateDoc",
-				"displayName": "Open with annotify",
-				"selector": [
-					{
-						"filenamePattern": "*.txt"
-					}
-				]
+			"command":"annotify.annotateDoc",
+			"title": "Open with annotify"
 			}
-		]
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id":"annotate-doc",
+					"title":"Annotify",
+					"icon":"./media/temp.svg"
+				}
+			]
+		},"views": {
+			"annotate-doc":[
+				{
+					"id":"entity-type-menu-tree",
+					"name":"Entity Types"
+				},
+				{
+					"id":"selections-menu-tree",
+					"name":"Selected Entities"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

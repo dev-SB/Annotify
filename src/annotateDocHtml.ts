@@ -1,9 +1,20 @@
 import * as vscode from 'vscode';
-export function getHtml(scriptUri: vscode.Uri, styleUri: vscode.Uri,document:vscode.TextDocument,nonce:string):string {
+import { readFile } from 'fs';
+function getText(document:vscode.Uri){
+    readFile(document.path, 'utf8', (err, data) => {
+        if (err) {
+            console.log(err.toString);
+        }
+        else {
+            return data;
+        }
+    });
+}
+export function getHtml(scriptUri: vscode.Uri, styleUri: vscode.Uri, document: vscode.Uri, nonce: string): string {
     return `
     <!DOCTYPE html>
     <html lang="en">
-    
+    r
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +27,8 @@ export function getHtml(scriptUri: vscode.Uri, styleUri: vscode.Uri,document:vsc
         <div class="content">
             <div class="content-text">
                 The text of document will be displayed here
-                ${document.getText()}
+                ${getText(document)}
+                
             </div>
         </div>
         <script nonce="${nonce}" src="${scriptUri}"></script>
