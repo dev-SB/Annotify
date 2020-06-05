@@ -1,29 +1,41 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { AnnotateDocEditorProvider } from './annotateDoc';
+import * as path from 'path';
+
+import {
+	getHtml
+} from './annotateDocHtml';
+
+import {
+	getNonce
+} from './util';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "annotify" is now active!');
+	let disposable =
+		vscode.commands.registerCommand('annotify.annotateDoc', () => {
+			const webViewPanel = vscode.window.createWebviewPanel(
+				'annotateDoc',
+				'Create Annotations',
+				vscode.ViewColumn.One, {}
+			);
+			// todo: handle when no document is open.
+			let editor = vscode.window.activeTextEditor;
+			if (editor) {
+				let doc = editor.document.uri;
+				const scriptUri = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'media', 'annotateDoc.js')));
 
-	// // The command has been defined in the package.json file
-	// // Now provide the implementation of the command with registerCommand
-	// // The commandId parameter must match the command field in package.json
-	// let disposable = vscode.commands.registerCommand('annotify.helloWorld', () => {
-	// 	// The code you place here will be executed every time your command is executed
-
-	// 	// Display a message box to the user
-	// 	vscode.window.showInformationMessage('Hello World from annotify!');
-	// });
-
-	// context.subscriptions.push(disposable);
-
-	context.subscriptions.push(AnnotateDocEditorProvider.register(context));
+				const styleUri = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'media', 'annotateDoc.css')));
+				const nonce = getNonce();
+				
+				webViewPanel.webview.html = getHtml(scriptUri, styleUri, doc, nonce);
+			}
+		});
+	context.subscriptions.push(disposable);
+	// context.subscriptions.push(AnnotateDocEditorProvider.register(context));
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
